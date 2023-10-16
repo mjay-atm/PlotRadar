@@ -122,8 +122,9 @@ def PlotMDV(info:tuple, items:tuple, save_flag:bool):
     fig, ax = plt.subplots(figsize=(16, 16))
     ax.set_facecolor("#e8edf1")
     dir_gs = {
-        'VE':   GraphSetUp('VR'),
         'DZ':   GraphSetUp('DZ'),
+        'VE':   GraphSetUp('VR'),
+        'VR':   GraphSetUp('VR'),
     }
     PlotRadar(ax, data, dir_gs[VarName])
 
@@ -159,10 +160,10 @@ def PlotMDV(info:tuple, items:tuple, save_flag:bool):
 if __name__ == '__main__':
 
     ##### Input #####
-    # diri    = '../1_data/MDV/TR/VRQC/1_NNN/20211126/053241.mdv'
-    # RadName = 'TEAM-R'
-    # VarName = 'VE'
-    # layer   = 0
+    # diri    = '../1_data/MDV/NU/MDV_test/20211126/050757.mdv'
+    # RadName = 'NTU'
+    # VarName = 'DZ'
+    # layer   = 'all'
     # save_flag = False
     # ------------------------------------------------------------
     diri    = sys.argv[1]
