@@ -1,21 +1,50 @@
 #%% Library
+from os import read
 import numpy as np
 import geopandas as gpd
 import projection as proj
 from matplotlib import pyplot as plt
 import matplotlib.colors as cls
 
-#%% Function
-def single_max_combine(diri:list, DIM:tuple, missing_flag:bool):
-    DATA = []
-    ny, nx = DIM
-    for fname in diri:
-        with open(fname, 'rb') as f:
-            array = np.fromfile(f, dtype=np.float32).reshape(ny, nx)
-        DATA.append(array.T)
-    DATA = np.array(DATA)
-    DATA = np.nanmax(DATA, 0)
-    if missing_flag: DATA[DATA < -99] = np.nan
+#%% Classes
+class ReadRakitCAPPI:
+    def __init__(self) -> None:
+        pass
+    def read(self, diri:list, dim:tuple):
+        ny, nx = dim
+        radar = []
+        for fn in diri:
+            with open(fn, 'rb') as f:
+                array = np.fromfile(f, dtype=np.float32).reshape(ny, nx)
+            radar.append(array.T)
+        radar = np.array(radar)
+        radar[radar < -99] = np.nan
+        return radar
+
+class ReadMDV:
+    def __init__(self) -> None:
+        pass
+    def read(self, diri:str):
+        from pyart.io.mdv_common import MdvFile as read_mdv
+        MDV = read_mdv(diri)
+        radar = self._GetFieldValue(MDV)
+        return radar
+    def _GetFieldValue(self, MDV):
+        data = None
+        for idx, var in enumerate(MDV.fields):
+            if var == 'DZ':
+                data = MDV.read_a_field(idx)
+        if data is None: raise Exception("Reflectivity cannot found in MDV file")
+        return data
+
+#%% Function          
+def single_max_combine(diri, filetype:str, **kwargs):
+    dir_radar = {
+        'Rakit' : "ReadRakitCAPPI().read(diri, kwargs['DIM'])",
+        'MDV'   : "ReadMDV().read(diri)"
+    }
+    radar = eval(dir_radar[filetype])
+    DATA = np.nanmax(radar, 0)
     return DATA
 
 def plot_domain(clat, clon, dx, dy, nx, ny, color):
@@ -37,26 +66,33 @@ city = gpd.read_file(diri, encoding="utf-8")
 # yiln = city[city['COUNTYNAME'].isin(["宜蘭縣"])]
 
 #%% Read Radar Data
-diri = "../1_data/CAPPI_TEMR/DZ/cappi_list.txt"
-with open(diri, 'r') as f:
-    LIST = f.read().splitlines()
+diri = "../1_data/MDV/TR/VRQC/1_NNN/20211126/045957.mdv"
+DATA = single_max_combine(diri, 'MDV', DIM=None)
 
-DATA = single_max_combine(LIST, (301, 301), False)
+# diri = "../1_data/CAPPI_TEMR/DZ/cappi_list.txt"
+# with open(diri, 'r') as f:
+#     LIST = f.read().splitlines()
+# DATA = single_max_combine(LIST, 'Rakit', DIM=(301, 301))
+
+#%%
 
 radar_name_list = {
     'RCWF': 'RCWF',
     'RCHL': 'RCHL',
-    'TEMR': 'TEAM-R'
+    'TEMR': 'TEAM-R',
+    'TEST': 'NTU'
 }
-radar_name = radar_name_list[diri.split('/')[-3].split('_')[-1]]
+radar_name = radar_name_list['TEMR']
+# radar_name = radar_name_list[diri.split('/')[-3].split('_')[-1]]
 # print(radar_name)
 
 radar_position = {
     'RCWF': (25.07306, 121.77306),
     'RCHL': (23.99000, 121.62000),
-    'TEMR': (24.82083, 121.72861)
+    'TEMR': (24.82083, 121.72861),
+    'TEST': (24.73250, 121.75472)
 }
-lat0, lon0 = radar_position[diri.split('/')[-3].split('_')[-1]]
+lat0, lon0 = radar_position['TEMR']
 
 dy, dx = (1., 1.) # km
 ny, nx = DATA.shape
@@ -116,7 +152,8 @@ tick = {
     'Qr':   np.arange(0, 1.5+0.25, 0.25)
 }
 
-var_name = diri.split('/')[-2]
+# var_name = diri.split('/')[-2]
+var_name = 'DZ'
 vmin = vrange[var_name][0]
 vmax = vrange[var_name][1]
 step = vrange[var_name][2]
@@ -144,7 +181,7 @@ ax = plot_domain(24.8470, 121.7730, 1., 1., 300, 300, 'r-')     # 300px_484-177_
 
 Radar = radar_name.upper()
 ax.set_facecolor("#e8edf1")
-ax.plot(lon0, lat0, "ro", label=Radar, markersize=10)
+ax.plot(lon0, lat0, "ko", label=Radar, markersize=10)
 
 lon, lat, data = (XLON, YLAT, DATA)
 pc = plt.pcolor(lon, lat, data,
