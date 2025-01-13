@@ -135,14 +135,14 @@ def PlotMDV(info:tuple, items:tuple, save_flag:bool):
     plt.plot(clon, clat, 'ko', markersize=10)
 
     ##### Title Setting #####
-    fig_title = f"{Date} {Time} UTC\n{RadName} / {VarName} / {HGT} km"
+    fig_title = f"{Date} {Time} UTC {RadName} / {VarName} / {HGT} km"
     plt.title(fig_title, fontsize=32)
 
     ##### Domain Setting #####
-    lonW, lonE = (120.00, 123.50)
-    latS, latN = { 23.00,  26.50}
+    lonW, lonE = (120.50, 123.00)
+    latS, latN = ( 23.50,  25.50)
     plt.xlim(lonW, lonE)
-    plt.ylim(latN, latS)
+    plt.ylim(latS, latN)
     plt.grid()
     plt.tight_layout()
 
@@ -160,17 +160,17 @@ def PlotMDV(info:tuple, items:tuple, save_flag:bool):
 if __name__ == '__main__':
 
     ##### Input #####
-    # diri    = '../1_data/MDV/NU/MDV_test/20211126/050757.mdv'
-    # RadName = 'NTU'
-    # VarName = 'DZ'
-    # layer   = 'all'
-    # save_flag = False
+    diri    = '../1_data/MDV/HL/7_SNS/20211126/053750.mdv'
+    RadName = 'RCWF'
+    VarName = 'VR'
+    layer   = 0
+    save_flag = False
     # ------------------------------------------------------------
-    diri    = sys.argv[1]
-    RadName = sys.argv[2]
-    VarName = sys.argv[3]
-    layer   = sys.argv[4]
-    save_flag = True
+    # diri    = sys.argv[1]
+    # RadName = sys.argv[2]
+    # VarName = sys.argv[3]
+    # layer   = sys.argv[4]
+    # save_flag = True
 
     ##### Read MDV #####
     radar = GetRadar(diri)

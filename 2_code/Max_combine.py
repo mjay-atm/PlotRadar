@@ -90,9 +90,10 @@ def GetLatLon(DataShape:tuple, resolution:tuple, Center:tuple):
 
 
 #%% Read Radar Data
-diri = "../1_data/MDV/TR/VRQC/1_NNN/20211126/045957.mdv"
+# diri = "../1_data/MDV/HL/7_SNS/20211126/053750.mdv"
+diri = "../1_data/MDV/WF/5_PSS/20211126/053805.mdv"
 DATA = single_max_combine(diri, 'MDV', DIM=None)
-RadName = "TEMR"
+RadName = "RCWF"
 # ------------------------------------------------------------
 # diri = "../1_data/CAPPI_TEMR/DZ/cappi_list.txt"
 # with open(diri, 'r') as f:
@@ -105,7 +106,7 @@ RadName = "TEMR"
 # FileType = sys.argv[3]
 # DIM = sys.argv[4]
 
-#%% PLOT
+
 RI = RadarInfo(RadName)
 radar_name = RI['namelist']
 lat0, lon0 = RI['position']
@@ -115,7 +116,8 @@ VarName = 'DZ'
 fig_title = f"CAPPI MAX COMBINE / {radar_name} / {VarName}"
 
 ##### Domain Setting #####
-lonE, lonW, latS, latN = (123.5, 120.0, 23.0, 26.5)
+# lonE, lonW, latS, latN = (123.0, 120.5, 23.5, 25.5)
+lonE, lonW, latS, latN = (125.00, 118.50, 21.00, 27.50)
 
 ##### PLOTTING #####
 gs = GraphSetUp(VarName)
@@ -126,7 +128,11 @@ ax.set_facecolor("#e8edf1")
 PlotTW(ax, 'k', 2.)
 
 ##### Plot Simulation Domain #####
-ax = plot_domain(24.8470, 121.7730, 1., 1., 300, 300, 'r-')     # 300px_484-177_*
+# ax = plot_domain(24.8470, 121.7730, 1., 1., 300, 300, 'r-')     # 300px_484-177_*
+ax = plot_domain(24.60, 122.07, 1., 1., 450, 400, 'r-')     # 300px_484-177_*
+# ax = plot_domain(24.0455, 121.4224, 1., 1., 501, 501, 'k')     # 300px_484-177_*
+ax = plot_domain(24.2699, 121.9217, 1., 1., 551, 551, 'k')     # 300px_484-177_*
+ax = plot_domain(lat0, lon0, 1., 1., 501, 501, 'b')     # 300px_484-177_*
 
 ##### Plot Radar Location #####
 ax.plot(lon0, lat0, "ko", label=Radar, markersize=10)

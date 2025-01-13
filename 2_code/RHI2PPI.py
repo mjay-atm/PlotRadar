@@ -18,17 +18,11 @@ def CoreRHI2PPI(OLD, nswp, nray):
         if n % 2:   NEW['data'][n] = OLD['data'][nswp*(2*N+1)   ].copy()
         else:       NEW['data'][n] = OLD['data'][nswp*(2*N+1)-1 ].copy()
         
-    # for n in range(int(nray/4)):
-    #     NEW['data'][2*n              ] = OLD['data'][nswp*n+0    ].copy()
-    #     NEW['data'][2*n+1            ] = OLD['data'][nswp*(n+2)-1].copy()
-    #     NEW['data'][2*n+int(nray/2)  ] = OLD['data'][nswp*(n+1)-1].copy()
-    #     NEW['data'][2*n+int(nray/2)+1] = OLD['data'][nswp*(n+1)  ].copy()
     return NEW
 #%% Main Script
 
 ##### Input #####
 diri = '../1_data/NetCDF/cfrad.20211126_045609.000_to_20211126_045609.000_Furuno_W_RHI.nc'
-VarName = 'DZ'
 
 ##### read_uf #####
 NC_OLD = read_nc(diri)
@@ -42,15 +36,7 @@ time['data'] = NC_OLD.time['data'][:nray].copy() # swp -> ray
 #%%
 fields = {}
 for field_name in NC_OLD.fields:
-    # field = NC_OLD.fields[field_name].copy()
     fields[field_name] = CoreRHI2PPI(NC_OLD.fields[field_name], nswp, nray)
-    # data = NC_OLD.fields[field_name]['data'][:nray].copy()
-    # field['data'] = data
-    # for n in range(int(nray/4)):
-    #     data[2*n   ] = NC_OLD.fields[field_name]['data'][4*n+1].copy()
-    #     data[2*n+60] = NC_OLD.fields[field_name]['data'][4*n+2].copy()
-    #     data[2*n+1 ] = NC_OLD.fields[field_name]['data'][4*n+3].copy()
-    #     data[2*n+61] = NC_OLD.fields[field_name]['data'][4*n+4].copy()
 
 #%%
 swp_numb = NC_OLD.sweep_number.copy()
@@ -77,24 +63,12 @@ swp_end_ray_idx['data'] = NC_OLD.sweep_end_ray_index['data'][:1].copy()
 swp_end_ray_idx['data'].data[0] = nray-1
 
 #%%
-# ele = NC_OLD.elevation.copy()
 ele = CoreRHI2PPI(NC_OLD.elevation, nswp, nray)
 ele['data'][int(nray/2):] = 180 - ele['data'][int(nray/2):]
-# for n in range(int(nray/4)):
-#     ele['data'][2*n   ] = NC_OLD.elevation['data'][4*n+1].copy()
-#     ele['data'][2*n+60] = NC_OLD.elevation['data'][4*n+2].copy()
-#     ele['data'][2*n+1 ] = NC_OLD.elevation['data'][4*n+3].copy()
-#     ele['data'][2*n+61] = NC_OLD.elevation['data'][4*n+4].copy()
 
-# azi = NC_OLD.azimuth.copy()
 azi = CoreRHI2PPI(NC_OLD.azimuth, nswp, nray)
 azi['data'][int(nray/2):] = azi['data'][int(nray/2):] + 180
 azi['data'][azi['data'] > 360] = azi['data'][azi['data'] > 360] - 360
-# for n in range(int(nray/4)):
-#     azi['data'][2*n   ] = NC_OLD.azimuth['data'][4*n+1].copy()
-#     azi['data'][2*n+60] = NC_OLD.azimuth['data'][4*n+2].copy()
-#     azi['data'][2*n+1 ] = NC_OLD.azimuth['data'][4*n+3].copy()
-#     azi['data'][2*n+61] = NC_OLD.azimuth['data'][4*n+4].copy()
 
 #%%
 instr_paras = NC_OLD.instrument_parameters.copy()
@@ -102,50 +76,38 @@ for var in instr_paras:
     if var == 'follow_mode':
         instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:1].copy()
     if var == 'pulse_width':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'prt_mode':
         instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:1].copy()
     if var == 'prt':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'prt_ratio':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'polarization_mode':
         instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:1].copy()
     if var == 'nyquist_velocity':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'unambiguous_range':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'n_samples':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'measured_transmit_power_v':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
     if var == 'measured_transmit_power_h':
-        # instr_paras[var]['data'] = NC_OLD.instrument_parameters[var]['data'][:nray].copy()
         instr_paras[var] = CoreRHI2PPI(NC_OLD.instrument_parameters[var], nswp, nray)
 #%%
 rad_calibrate = NC_OLD.radar_calibration.copy()
 rad_calibrate['r_calib_index'] = CoreRHI2PPI(NC_OLD.radar_calibration['r_calib_index'], nswp, nray)
-# rad_calibrate['r_calib_index']['data'] = NC_OLD.radar_calibration['r_calib_index']['data'][:nray].copy()
 
 #%% 
 # scan_rate = NC_OLD.scan_rate.copy()
 scan_rate = CoreRHI2PPI(NC_OLD.scan_rate, nswp, nray)
-# scan_rate['data'] = NC_OLD.scan_rate['data'][:nray].copy()
 
 #%%
 target_scan_rate = NC_OLD.target_scan_rate.copy()
 target_scan_rate['data'] = NC_OLD.target_scan_rate['data'][:1].copy()
 
 #%%
-# antenna_transition = NC_OLD.antenna_transition.copy()
-# antenna_transition['data'] = NC_OLD.antenna_transition['data'][:nray].copy()
 antenna_transition = CoreRHI2PPI(NC_OLD.antenna_transition, nswp, nray)
 #%%
 UF_NEW = create_radar(
